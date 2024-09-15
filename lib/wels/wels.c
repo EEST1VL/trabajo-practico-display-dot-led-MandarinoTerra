@@ -60,9 +60,13 @@ esta funcion recibe un string y lo convierte en la representacion
 void text_to_leds(char *texto, uint8_t *led_buff) {}
 
 /*esta funcion hace el multiplexado de lineas*/
-void mux_leds(uint8_t *led_buff) {}
+void mux_leds(uint8_t *led_buff) {
+  
+}
 /*
 esta funcion agarra el vector que me dice que leds prender y envia a los registros una fila
 
 */
-void shift_line(uint8_t *led_buff, uint8_t fila) {}
+void shift_line(uint8_t *led_buff, uint8_t fila) {
+
+}
