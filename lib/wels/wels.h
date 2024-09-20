@@ -32,11 +32,11 @@ void mostrar_str(char* texto);
 esta funcion recibe un string y lo convierte en la representacion
  en memoria de los leds que se deben prender en la matrix
 */
-void text_to_leds(char* texto, uint8_t * led_buff);
+void text_to_leds(char* texto, uint8_t *led_buff);
 
 
 /*esta funcion hace el multiplexado de lineas*/
-void mux_leds(uint8_t* led_buff);
+void mux_leds(uint8_t led_buff[], uint8_t hola[]);
 /*
 esta funcion agarra el vector que me dice que leds prender y envia a los registros una fila
 
