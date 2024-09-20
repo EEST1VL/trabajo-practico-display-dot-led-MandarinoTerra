@@ -11,9 +11,10 @@ extern "C"
 //--------------------------------------------------------------
 //--------------------------------------------------------------
 
+#define MATRIX_BUFF_LEN 60
 void timer1(void);
-void wels_col(uint64_t data);
-void wels_fila(uint8_t fila);
+void send_fila(uint64_t data);
+void select_fila(uint8_t fila);
 /*
 char str[20];
 strcpy(str,"hola mundo");
@@ -26,17 +27,17 @@ str[2]='l';
 str[3]='a';
 */
 /*a esta funcion le paso el texto a mostrar y lo convierte y multiplexa en el display*/
-void mostrar_str(char* texto);
+void mostrar_str(char* texto, uint8_t* bufffer);
 
 /*
 esta funcion recibe un string y lo convierte en la representacion
  en memoria de los leds que se deben prender en la matrix
 */
-void text_to_leds(char* texto, uint8_t *led_buff);
+void text_to_leds(char texto, uint8_t led_buff);
 
 
 /*esta funcion hace el multiplexado de lineas*/
-void mux_leds(uint8_t led_buff[], uint8_t hola[]);
+void mux_leds(uint8_t hola[]);
 /*
 esta funcion agarra el vector que me dice que leds prender y envia a los registros una fila
 
