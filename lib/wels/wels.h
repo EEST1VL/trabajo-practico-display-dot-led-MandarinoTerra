@@ -11,7 +11,7 @@ extern "C"
 //--------------------------------------------------------------
 //--------------------------------------------------------------
 
-#define MATRIX_BUFF_LEN 60
+#define LARGO_VECTOR_SALIDA 180
 void timer1(void);
 void send_fila(uint64_t data);
 void select_fila(uint8_t fila);
@@ -27,6 +27,8 @@ str[2]='l';
 str[3]='a';
 */
 /*a esta funcion le paso el texto a mostrar y lo convierte y multiplexa en el display*/
+
+void strtupapa(char* str);
 void mostrar_str(char* texto, uint8_t* bufffer);
 
 /*

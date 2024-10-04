@@ -22,19 +22,21 @@ uint8_t tupapaminovio[128][6] = {
      0b00010110,
      0b00001000}, // espacio
 
-    {0b00010000,
-     0b00010110,
-     0b00100000,
-     0b00100000,
-     0b00010110,
-     0b00010000}, // espacio
+    {
+     0b00000100,
+     0b00000100,
+     0b00011100,
+     0b00111100,
+     0b00111111,
+      0b00011100
+     },
 
-    {0b00010000,
-     0b00010110,
-     0b00100000,
-     0b00100000,
-     0b00010110,
-     0b00010000},
+    {0b00011100,
+     0b00111111,
+     0b00111100,
+     0b00011100,
+     0b00000100,
+     0b00000100},
     {0x00, 0x00, 0x00, 0x00, 0x00, 0x00}, // espacio
     {0x00, 0x00, 0x00, 0x00, 0x00, 0x00}, // espacio
     {0x00, 0x00, 0x00, 0x00, 0x00, 0x00}, // espacio
@@ -221,7 +223,7 @@ void cargar_char(char character, uint8_t *buffer)
 
   for (int i = 0; i < 6; i++)
   {
-    if (buffer_index >= MATRIX_BUFF_LEN)
+    if (buffer_index >= LARGO_VECTOR_SALIDA)
     {
       return;
     }
@@ -239,30 +241,6 @@ void mostrar_str(char *texto, uint8_t *buffer)
     cargar_char(texto[i], buffer);
     i++;
   }
-
-  //  cargar_char('p', buffer);
-  //  cargar_char('e', buffer);
-  //  cargar_char('p', buffer);
-  //  cargar_char('e', buffer);
-
-  // for (int i = 0; i < 6; i++)
-  // {
-  //     buffer[i] = tupapaminovio['n'][i];
-  //     buffer[i + 6] = tupapaminovio['n'][i];
-  //     buffer[i + 12] = tupapaminovio['n'][i];
-  //     buffer[i + 18] = tupapaminovio['n'][i];
-  //     buffer[i + 24] = tupapaminovio['n'][i];
-  // }
-
-  // static uint8_t j = 0;
-  // while (texto[j] != 0)
-  // {
-  //   for (int i = 0; i < 5; i++)
-  //   {
-  //     buffer[i * 6] = tupapaminovio[(uint8_t)texto[j]][i];
-  //   }
-  //   j++;
-  // }
 };
 
 void mux_leds(uint8_t hola[])

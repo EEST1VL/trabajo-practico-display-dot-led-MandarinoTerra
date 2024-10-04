@@ -37,9 +37,9 @@ int main()
     set_bit(DDRB, PB1); // led 8
     set_bit(DDRB, PB2); // led 8
 
-    uint8_t hola[MATRIX_BUFF_LEN] = {0xFF, 0xaa, 0x55, 0x00, 0xFF, 0xaa, 0x55, 0x00, 0xFF, 0xaa, 0x55, 0x00, 0xFF, 0xaa, 0x55, 0x00, 0xFF, 0xaa, 0x55, 0x00, 0xFF, 0xaa, 0x55, 0x00, 0xFF, 0xaa, 0x55, 0x00, 0xFF, 0xaa, 0x55, 0x00, 0xFF, 0xaa, 0x55, 0x00, 0xFF, 0xaa, 0x55, 0x00};
+    uint8_t hola[LARGO_VECTOR_SALIDA] = {};
 
-    char str[] = {"hola"};
+    char str[] = {"\3\2 Onii-chan \3\2 "};
 
     uint8_t scroll_pos = 0;
 
@@ -50,13 +50,13 @@ int main()
     {
         if (scroll_time == 0)
         {
-            scroll_time = 50;
+            scroll_time = 100;
             scroll_save = hola[0];
-            for (size_t i = 0; i < 59; i++)
+            for (size_t i = 0; i < (strlen(str)*6); i++)
             {
                 hola[i] = hola[i + 1];
             }
-            hola[59] = scroll_save;
+            hola[(strlen(str)*6)] = scroll_save;
         }
         mux_leds(&hola[scroll_pos]);
     }
