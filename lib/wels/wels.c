@@ -23,13 +23,12 @@ uint8_t tupapaminovio[128][6] = {
      0b00001000}, // espacio
 
     {
-     0b00000100,
-     0b00000100,
-     0b00011100,
-     0b00111100,
-     0b00111111,
-      0b00011100
-     },
+        0b00000100,
+        0b00000100,
+        0b00011100,
+        0b00111100,
+        0b00111111,
+        0b00011100},
 
     {0b00011100,
      0b00111111,
@@ -165,6 +164,24 @@ uint8_t tupapaminovio[128][6] = {
 
 };
 
+void strtupapa(char *str, int *fl_scroll)
+{
+  static uint8_t hola[LARGO_VECTOR_SALIDA] = {};
+  static uint8_t scroll_save = 0;
+  mostrar_str(&str[0], &hola[0]);
+
+  if (*fl_scroll >= 50)
+  {
+    *fl_scroll = 0;
+    scroll_save = hola[0];
+    for (size_t i = 0; i < (strlen(str) * 6); i++)
+    {
+      hola[i] = hola[i + 1];
+    }
+    hola[(strlen(str) * 6)] = scroll_save;
+  }
+  mux_leds(&hola[0]);
+};
 void timer1(void)
 {
   /*
@@ -263,3 +280,47 @@ void mux_leds(uint8_t hola[])
   clear_bit(PORTB, PB1);
   beats = beats_ini = 0;
 }
+
+/*
+
+357  troncos de roble                                                    
+72   escaleras de roble                                                 
+225  paredes de ladrillos de piedra                                                         
+22   paredes de adoquines                                                                  
+50   puertas de valla de abeto                                                      
+86    vallas de abeto                                                                  
+89    trampillas de abeto                                                                          
+212  escaleras de abeto                                                     
+135  fogatas                                                                  
+55   hojas de roble                                                                        
+450  tablas de abeto                                                            
+141   tablones de roble                                                          
+5    arbustos muertos                                                                 
+7    macetas                                                             
+16   obsidiana                                                                                          
+58   cofres                                             
+30   troncos de roble decapados                                                                       
+20   paneles de vidrio                                                            
+12    barriles                                                                         
+3    mesas de elaboración                                                                  
+16   botones de abeto                                                                
+68   escaleras de ladrillo de piedra                                                       
+21   losa de ladrillo de piedra                                                          
+5     hornos                                                          
+5    fumadores                                                                             
+5      altos hornos                                                            
+1     telar                                                                     
+1     mesa de herrería                                                
+1     mesa de cartografía                                                      
+1     cortador de piedra                                                         
+1    bambú                                                                             
+1    flor                                                                 
+12    estanterías                                                                    
+1     yunque                                                                 
+1     mesa de reparación y desencanto                                                   
+1     cama                                                                                      
+1     soporte de armadura                                                                                           
+1     cofre final                                                                 
+11   alfombras                                                      
+
+*/

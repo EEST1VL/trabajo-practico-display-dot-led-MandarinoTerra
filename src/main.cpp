@@ -6,22 +6,10 @@
 #define clear_bit(reg, bit) reg &= ~(1 << bit)
 int n = 65;
 
-int scroll_time = 100;
+int scroll_time = 1000;
 
 uint8_t mux_vel;
-uint64_t mux_time = 0;
-uint8_t led_buff[8] = {
-
-    0b11111111,
-    0b00000001,
-    0b00000010,
-    0b00000100,
-    0b00001000,
-    0b00010000,
-    0b00100000,
-    0b01000000,
-
-};
+uint64_t mux_time = 3;
 
 int main()
 {
@@ -37,39 +25,16 @@ int main()
     set_bit(DDRB, PB1); // led 8
     set_bit(DDRB, PB2); // led 8
 
-    uint8_t hola[LARGO_VECTOR_SALIDA] = {};
-
-    char str[] = {"\3\2 Onii-chan \3\2 "};
-
-    uint8_t scroll_pos = 0;
-
-    mostrar_str(&str[0], &hola[0]);
-
-    uint8_t scroll_save;
+    char str[] = {"18m:14s"};
     while (1)
     {
-        if (scroll_time == 0)
-        {
-            scroll_time = 100;
-            scroll_save = hola[0];
-            for (size_t i = 0; i < (strlen(str)*6); i++)
-            {
-                hola[i] = hola[i + 1];
-            }
-            hola[(strlen(str)*6)] = scroll_save;
-        }
-        mux_leds(&hola[scroll_pos]);
+        str[0] = '3';
+        strtupapa(str, &scroll_time);
+        str[0] = '4';
+        strtupapa(str, &scroll_time);
+
     }
 }
 ISR(TIMER1_COMPA_vect)
 {
-
-    if (scroll_time)
-        scroll_time--;
-    mux_time++;
-    if (mux_time >= 1)
-    {
-
-        mux_time = 0;
-    }
 }
