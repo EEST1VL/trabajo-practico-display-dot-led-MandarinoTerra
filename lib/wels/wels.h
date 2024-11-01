@@ -28,6 +28,11 @@ extern "C"
     */
     /*a esta funcion le paso el texto a mostrar y lo convierte y multiplexa en el display*/
 
+
+/**
+ * esta funcion convierte un string en el vector necesario para mostrar en la matrix.
+ * regcibe str, como puntero a str de entrada, fl_scroll es un puntero a la variable de escroleo.
+*/
     void strtupapa(char *str, int*fl_scroll);
     void mostrar_str(char *texto, uint8_t *bufffer);
 
@@ -41,7 +46,6 @@ extern "C"
     void mux_leds(uint8_t hola[]);
     /*
     esta funcion agarra el vector que me dice que leds prender y envia a los registros una fila
-
     */
     void shift_line(uint8_t *led_buff, uint8_t fila);
 

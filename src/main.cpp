@@ -6,11 +6,12 @@
 #define clear_bit(reg, bit) reg &= ~(1 << bit)
 int n = 65;
 
-int scroll_time = 1000;
+int scroll_time = 1;
 
 uint8_t mux_vel;
 uint64_t mux_time = 3;
 
+uint8_t var1=12, var2=0;
 int main()
 {
     TCCR1A = 0b00000000; // CTC
@@ -24,17 +25,25 @@ int main()
     set_bit(DDRB, PB0); // led 7
     set_bit(DDRB, PB1); // led 8
     set_bit(DDRB, PB2); // led 8
+    set_bit(DDRB, PB5); // led 8
 
-    char str[] = {"18m:14s"};
+    char str[]={};
     while (1)
     {
-        str[0] = '3';
-        strtupapa(str, &scroll_time);
-        str[0] = '4';
-        strtupapa(str, &scroll_time);
-
+        sprintf(&str[0],"%dm%ds  ",var1,var2);
     }
 }
 ISR(TIMER1_COMPA_vect)
 {
+static uint16_t cnt=0;
+
+
+if(cnt++>100){
+    cnt=0;
+
+    set_bit(PINB,PB5);
+    var2++;
+}
+
+
 }

@@ -1,9 +1,9 @@
 #include <wels.h>
 #include <Arduino.h>
 #include <string.h>
-#define data_pin PB2
-#define clk_pin PB0
-#define latch_pin PB1
+#define clk_pin PB0    //  rclk           
+#define latch_pin PB1  //  srclk           
+#define data_pin PB2   //  ser            
 #define set_bit(reg, bit) reg |= (1 << bit)
 #define clear_bit(reg, bit) reg &= ~(1 << bit)
 
@@ -168,6 +168,7 @@ void strtupapa(char *str, int *fl_scroll)
 {
   static uint8_t hola[LARGO_VECTOR_SALIDA] = {};
   static uint8_t scroll_save = 0;
+  
   mostrar_str(&str[0], &hola[0]);
 
   if (*fl_scroll >= 50)
@@ -181,6 +182,8 @@ void strtupapa(char *str, int *fl_scroll)
     hola[(strlen(str) * 6)] = scroll_save;
   }
   mux_leds(&hola[0]);
+
+
 };
 void timer1(void)
 {
@@ -233,10 +236,13 @@ void send_fila(uint64_t data)
   }
 }
 
-void cargar_char(char character, uint8_t *buffer)
+void cargar_char(char character, uint8_t *buffer, uint8_t reset_ptr)
 {
 
   static uint8_t buffer_index = 0;
+  if(reset_ptr){
+    buffer_index=0;
+  }
 
   for (int i = 0; i < 6; i++)
   {
@@ -251,11 +257,14 @@ void cargar_char(char character, uint8_t *buffer)
 
 void mostrar_str(char *texto, uint8_t *buffer)
 {
-  uint8_t i = 0;
+
+  cargar_char(texto[0], buffer, 1);
+
+  uint8_t i = 1;
 
   while (texto[i] != 0)
   {
-    cargar_char(texto[i], buffer);
+    cargar_char(texto[i], buffer, 0);
     i++;
   }
 };
