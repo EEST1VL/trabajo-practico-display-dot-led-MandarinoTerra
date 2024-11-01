@@ -27,10 +27,14 @@ int main()
     set_bit(DDRB, PB2); // led 8
     set_bit(DDRB, PB5); // led 8
 
-    char str[]={};
+    char str[] = {"83m14s "};
     while (1)
     {
+
         sprintf(&str[0],"%dm%ds  ",var1,var2);
+        strtupapa(str, &scroll_time);
+        
+
     }
 }
 ISR(TIMER1_COMPA_vect)
