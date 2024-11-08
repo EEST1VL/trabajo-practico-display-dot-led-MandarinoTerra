@@ -1,9 +1,9 @@
 #include <wels.h>
 #include <Arduino.h>
 #include <string.h>
-#define clk_pin PB0    //  rclk           
-#define latch_pin PB1  //  srclk           
-#define data_pin PB2   //  ser            
+#define clk_pin PB0   //  rclk
+#define latch_pin PB1 //  srclk
+#define data_pin PB2  //  ser
 #define set_bit(reg, bit) reg |= (1 << bit)
 #define clear_bit(reg, bit) reg &= ~(1 << bit)
 
@@ -164,11 +164,33 @@ uint8_t tupapaminovio[128][6] = {
 
 };
 
+void initInterrupts(void)
+{
+  EIMSK |= (1 << INT0);  // habilita interrupcion externa INT0 en PD2
+  EIMSK |= (1 << INT1);  // habilita interrupcion externa INT1 en PD3
+  EICRA |= (1 << ISC01); // configura flanco ascendente en interrupcion externa INT0
+  EICRA |= (1 << ISC11); // configura flanco ascendente en interrupcion externa INT1
+}
+//uint8_t enconderiano(uint8_t angle)
+//{
+//  static uint8_t anglepass = 0;
+//  if (angle == anglepass)
+//    return 2;
+//  else
+//  {
+//    if (angle > anglepass)
+//      anglepass = angle;
+//      return 1;
+//    else
+//      anglepass = angle;
+//      return 0;
+//  }
+//}
 void strtupapa(char *str, int *fl_scroll)
 {
   static uint8_t hola[LARGO_VECTOR_SALIDA] = {};
   static uint8_t scroll_save = 0;
-  
+
   mostrar_str(&str[0], &hola[0]);
 
   if (*fl_scroll >= 50)
@@ -182,8 +204,6 @@ void strtupapa(char *str, int *fl_scroll)
     hola[(strlen(str) * 6)] = scroll_save;
   }
   mux_leds(&hola[0]);
-
-
 };
 void timer1(void)
 {
@@ -240,8 +260,9 @@ void cargar_char(char character, uint8_t *buffer, uint8_t reset_ptr)
 {
 
   static uint8_t buffer_index = 0;
-  if(reset_ptr){
-    buffer_index=0;
+  if (reset_ptr)
+  {
+    buffer_index = 0;
   }
 
   for (int i = 0; i < 6; i++)
@@ -301,48 +322,46 @@ void mux_leds(uint8_t hola[])
 ------------------------------------------------------------------------------------------------------------------------------------
 */
 
-
-
 /*
 
-357  troncos de roble                                                    
-72   escaleras de roble                                                 
-225  paredes de ladrillos de piedra                                                         
-22   paredes de adoquines                                                                  
-50   puertas de valla de abeto                                                      
-86    vallas de abeto                                                                  
-89    trampillas de abeto                                                                          
-212  escaleras de abeto                                                     
-135  fogatas                                                                  
-55   hojas de roble                                                                        
-450  tablas de abeto                                                            
-141   tablones de roble                                                          
-5    arbustos muertos                                                                 
-7    macetas                                                             
-16   obsidiana                                                                                          
-58   cofres                                             
-30   troncos de roble decapados                                                                       
-20   paneles de vidrio                                                            
-12    barriles                                                                         
-3    mesas de elaboración                                                                  
-16   botones de abeto                                                                
-68   escaleras de ladrillo de piedra                                                       
-21   losa de ladrillo de piedra                                                          
-5     hornos                                                          
-5    fumadores                                                                             
-5      altos hornos                                                            
-1     telar                                                                     
-1     mesa de herrería                                                
-1     mesa de cartografía                                                      
-1     cortador de piedra                                                         
-1    bambú                                                                             
-1    flor                                                                 
-12    estanterías                                                                    
-1     yunque                                                                 
-1     mesa de reparación y desencanto                                                   
-1     cama                                                                                      
-1     soporte de armadura                                                                                           
-1     cofre final                                                                 
-11   alfombras                                                      
+357  troncos de roble
+72   escaleras de roble
+225  paredes de ladrillos de piedra
+22   paredes de adoquines
+50   puertas de valla de abeto
+86    vallas de abeto
+89    trampillas de abeto
+212  escaleras de abeto
+135  fogatas
+55   hojas de roble
+450  tablas de abeto
+141   tablones de roble
+5    arbustos muertos
+7    macetas
+16   obsidiana
+58   cofres
+30   troncos de roble decapados
+20   paneles de vidrio
+12    barriles
+3    mesas de elaboración
+16   botones de abeto
+68   escaleras de ladrillo de piedra
+21   losa de ladrillo de piedra
+5     hornos
+5    fumadores
+5      altos hornos
+1     telar
+1     mesa de herrería
+1     mesa de cartografía
+1     cortador de piedra
+1    bambú
+1    flor
+12    estanterías
+1     yunque
+1     mesa de reparación y desencanto
+1     cama
+1     soporte de armadura
+1     cofre final
+11   alfombras
 
 */

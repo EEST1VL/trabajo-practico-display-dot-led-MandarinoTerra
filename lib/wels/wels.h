@@ -28,12 +28,13 @@ extern "C"
     */
     /*a esta funcion le paso el texto a mostrar y lo convierte y multiplexa en el display*/
 
-
-/**
- * esta funcion convierte un string en el vector necesario para mostrar en la matrix.
- * regcibe str, como puntero a str de entrada, fl_scroll es un puntero a la variable de escroleo.
-*/
-    void strtupapa(char *str, int*fl_scroll);
+    void initInterrupts(void);
+    //uint_8t enconderiano(uint_8t angle);
+        /**
+         * esta funcion convierte un string en el vector necesario para mostrar en la matrix.
+         * regcibe str, como puntero a str de entrada, fl_scroll es un puntero a la variable de escroleo.
+         */
+        void strtupapa(char *str, int *fl_scroll);
     void mostrar_str(char *texto, uint8_t *bufffer);
 
     /*
