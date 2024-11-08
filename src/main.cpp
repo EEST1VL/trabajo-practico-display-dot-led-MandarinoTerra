@@ -25,10 +25,12 @@ enum sexo_fernandez
 {
     seteo,
     star_stop,
-    titilar
+    titilar,
+    titilarge,
+    finazilo
 };
 enum sexo_fernandez estado = seteo;
-uint16_t seg_st = 0;
+uint32_t seg_st = 0;
 
 uint16_t velo = 1000;
 uint8_t pausa = 0;
@@ -60,6 +62,7 @@ int main()
 
     char str[] = {"83m14s "};
 
+    uint8_t titi = 0;
     while (1)
     {
         switch (estado)
@@ -129,6 +132,43 @@ int main()
 
             break;
         case titilar:
+            sprintf(&str[0], "   \3\2 ");
+            strtupapa(&str[0], &scroll_time);
+            if (titi <= 10)
+            {
+                if (seg_st >= 500)
+                {
+                    titi++;
+                    estado = titilarge;
+                    seg_st = 0;
+                }
+            }
+            else
+            {
+                titi = 0;
+                estado = finazilo;
+                
+            }
+            break;
+        case titilarge:
+            sprintf(&str[0], "  \3  \2");
+            strtupapa(&str[0], &scroll_time);
+            if (titi <= 10)
+            {
+                if (seg_st >= 500)
+                {
+                    titi++;
+                    seg_st = 0;
+                    estado = titilar;
+                }
+            }
+            else
+            {
+                titi = 0;
+                estado = finazilo;
+            }
+            break;
+        case finazilo:
             sprintf(&str[0], "Fin\3 \2 ");
             strtupapa(&str[0], &scroll_time);
             if (flag_bot1 == 1 && e_a_b1 == 0) // deteccion de flanco bot1
@@ -147,7 +187,6 @@ int main()
 ISR(TIMER1_COMPA_vect)
 {
     // set_bit(PINB, PB5);
-
     seg_st++;
 
     anti_reb1();
