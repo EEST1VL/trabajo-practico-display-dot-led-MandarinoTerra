@@ -7,14 +7,11 @@
 
 #define boton3 (PIND >> PD4 & 1)
 #define boton2 (PIND >> PD3 & 1)
-#define boton1 (PIND >> PD2 & 1)
+#define boton1 (PIND >> PD7 & 1)
 
 int scroll_time = 1;
 
 void anti_reb1(void);
-void anti_reb2(void);
-void anti_reb3(void);
-void anti_reb4(void);
 
 uint8_t flag_bot1, e_a_b1;
 uint8_t flag_bot2, e_a_b2;
@@ -27,7 +24,8 @@ enum sexo_fernandez
     star_stop,
     titilar,
     titilarge,
-    finazilo
+    finazilo,
+    Voltimetro
 };
 enum sexo_fernandez estado = seteo;
 uint32_t seg_st = 0;
@@ -59,9 +57,6 @@ int main()
     initInterrupts();
     sei();
 
-    set_bit(PORTD, PD5);
-    clear_bit(PORTD, PD6);
-
     clear_bit(PORTB, PB5);
     clear_bit(DDRD, PD2); // boton 1
     set_bit(PORTD, PD2);
@@ -71,13 +66,15 @@ int main()
 
     clear_bit(DDRD, PD4); // boton 3
     set_bit(PORTD, PD4);
+    clear_bit(DDRD, PD7); // boton 3
+    set_bit(PORTD, PD7);
 
     set_bit(DDRB, PB0); // led 8
     set_bit(DDRB, PB1); // led 8
     set_bit(DDRB, PB2); // led 8
     set_bit(DDRB, PB5); // led 8
-
-    char str[] = {"83m14s "};
+    char str[50];
+    uint16_t volt;
 
     uint8_t titi = 0;
 
@@ -89,7 +86,6 @@ int main()
             sprintf(&str[0], "%dm%ds  ", mins, segs);
             strtupapa(&str[0], &scroll_time);
             segs = angle;
-
             if (mins < 20)
             {
                 if (segs > 59)
@@ -117,6 +113,11 @@ int main()
                 mins_save = mins;
                 segs_save = segs;
             }
+            if (flag_bot1 == 1 && e_a_b1 == 0) // deteccion de flanco bot1
+            {
+                estado = Voltimetro;
+            }
+            e_a_b1 = flag_bot1;
             break;
         case star_stop:
             sprintf(&str[0], "%dm%ds   ", mins, segs);
@@ -188,7 +189,30 @@ int main()
             estado = seteo;
 
             break;
+        case Voltimetro:
+            sprintf(&str[0], "%d.%dV  ", volt / 1000, volt % 1000);
+            strtupapa(&str[0], &scroll_time);
+            if (seg_st >= 100)
+            {
+                volt = (uint32_t)adc_read(0) * 5000 / 1024;
+                seg_st = 0;
+            }
+            if (flag_bot1 == 1 && e_a_b1 == 0) // deteccion de flanco bot1
+            {
+                estado = seteo;
+            }
+            e_a_b1 = flag_bot1;
+            break;
+
         default:
+            sprintf(&str[0], "%d.%dV  ", volt / 1000, volt % 1000);
+            strtupapa(&str[0], &scroll_time);
+            if (seg_st >= 100)
+            {
+                volt = (uint32_t)adc_read(0) * 5000 / 1024;
+                seg_st = 0;
+            }
+
             break;
         }
     }
@@ -197,4 +221,30 @@ ISR(TIMER1_COMPA_vect)
 {
     // set_bit(PINB, PB5);
     seg_st++;
+    anti_reb1();
+}
+void anti_reb1(void)
+{
+    static uint8_t cont_bot1 = 0;
+    if (boton1 == 0)
+    {
+        if (cont_bot1 < 200)
+        {
+            cont_bot1++;
+        }
+    }
+    else
+    {
+        cont_bot1 = 0;
+    }
+    if (cont_bot1 > 50)
+    {
+        flag_bot1 = 1;
+        set_bit(PINB, PB5);
+    }
+    else
+    {
+
+        flag_bot1 = 0;
+    }
 }
