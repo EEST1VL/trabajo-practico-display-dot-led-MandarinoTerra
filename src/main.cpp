@@ -35,7 +35,7 @@ uint32_t seg_st = 0;
 uint16_t velo = 1000;
 uint8_t pausa = 0;
 int8_t angle = 10;
-uint8_t mins = 0, segs = 0, mins_save, segs_save;
+int8_t mins = 3, segs = 59, mins_save, segs_save;
 
 ISR(INT0_vect) // me interrumpio el PD2
 {
@@ -49,6 +49,7 @@ ISR(INT1_vect) // me interrumpio el PD3
 
 int main()
 {
+    adc_init();
     TCCR1A = 0b00000000; // CTC
     TCCR1B = 0b00001011; // clk/64
     TCCR1C = 0;
@@ -57,6 +58,9 @@ int main()
 
     initInterrupts();
     sei();
+
+    set_bit(PORTD, PD5);
+    clear_bit(PORTD, PD6);
 
     clear_bit(PORTB, PB5);
     clear_bit(DDRD, PD2); // boton 1
@@ -85,18 +89,31 @@ int main()
             sprintf(&str[0], "%dm%ds  ", mins, segs);
             strtupapa(&str[0], &scroll_time);
             segs = angle;
-            if (segs > 59)
+
+            if (mins < 20)
             {
-                angle = 0;
-                if (mins <= 20)
+                if (segs > 59)
                 {
-                   mins++;
+                    mins++;
+                    angle = 0;
+                }
+                if (segs < 0)
+                {
+                    if (mins > 0)
+                    {
+                        angle = 59;
+                        mins--;
+                    }
+                    else
+                    {
+                        angle = 0;
+                    }
                 }
             }
 
-            if (boton3 == 1) // deteccion de flanco bot3
+            if (boton3 == 0) // deteccion de flanco bot3
             {
-                // estado = star_stop;
+                estado = star_stop;
                 mins_save = mins;
                 segs_save = segs;
             }
@@ -104,7 +121,7 @@ int main()
         case star_stop:
             sprintf(&str[0], "%dm%ds   ", mins, segs);
             strtupapa(&str[0], &scroll_time);
-            if (boton3 == 1) // deteccion de flanco bot3
+            if (boton3 == 0) // deteccion de flanco bot3
                 pausa = !pausa;
             if (pausa == 0)
             {

@@ -171,21 +171,49 @@ void initInterrupts(void)
   EICRA |= (1 << ISC01); // configura flanco ascendente en interrupcion externa INT0
   EICRA |= (1 << ISC11); // configura flanco ascendente en interrupcion externa INT1
 }
-//uint8_t enconderiano(uint8_t angle)
+// uint8_t enconderiano(uint8_t angle)
 //{
-//  static uint8_t anglepass = 0;
-//  if (angle == anglepass)
-//    return 2;
-//  else
-//  {
-//    if (angle > anglepass)
-//      anglepass = angle;
-//      return 1;
-//    else
-//      anglepass = angle;
-//      return 0;
-//  }
-//}
+//   static uint8_t anglepass = 0;
+//   if (angle == anglepass)
+//     return 2;
+//   else
+//   {
+//     if (angle > anglepass)
+//       anglepass = angle;
+//       return 1;
+//     else
+//       anglepass = angle;
+//       return 0;
+//   }
+// }
+
+void adc_init()
+{
+    // Configurar el prescaler a 128 (frecuencia ADC = 16 MHz / 128 = 125 kHz)
+    ADCSRA |= (1 << ADPS2) | (1 << ADPS1) | (1 << ADPS0);
+
+    // Seleccionar la referencia de voltaje como AVcc (5V con capacitor en AREF)
+    ADMUX |= (1 << REFS0);
+
+    // Habilitar el ADC
+    ADCSRA |= (1 << ADEN);
+}
+uint16_t adc_read(uint8_t channel) {
+    // Asegurarse de que el canal esté en el rango válido (0-7)
+    channel &= 0b00000111;
+
+    // Seleccionar el canal configurando los bits MUX
+    ADMUX = (ADMUX & 0xF8) | channel;
+
+    // Iniciar la conversión
+    ADCSRA |= (1 << ADSC);
+
+    // Esperar a que la conversión termine (ADSC se pone en 0)
+    while (ADCSRA & (1 << ADSC));
+
+    // Retornar el valor convertido (10 bits)
+    return ADC;
+}
 void strtupapa(char *str, int *fl_scroll)
 {
   static uint8_t hola[LARGO_VECTOR_SALIDA] = {};
