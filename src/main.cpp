@@ -9,7 +9,7 @@
 #define boton2 (PIND >> PD3 & 1)
 #define boton1 (PIND >> PD7 & 1)
 
-int scroll_time = 1;
+
 
 void anti_reb1(void);
 
@@ -18,22 +18,9 @@ uint8_t flag_bot2, e_a_b2;
 uint8_t flag_bot3, e_a_b3;
 uint8_t flag_bot4, e_a_b4;
 
-enum sexo_fernandez
-{
-    seteo,
-    star_stop,
-    titilar,
-    titilarge,
-    finazilo,
-    Voltimetro
-};
-enum sexo_fernandez estado = seteo;
 uint32_t seg_st = 0;
-
-uint16_t velo = 1000;
-uint8_t pausa = 0;
 int8_t angle = 10;
-int8_t mins = 3, segs = 59, mins_save, segs_save;
+
 
 ISR(INT0_vect) // me interrumpio el PD2
 {
@@ -48,11 +35,7 @@ ISR(INT1_vect) // me interrumpio el PD3
 int main()
 {
     adc_init();
-    TCCR1A = 0b00000000; // CTC
-    TCCR1B = 0b00001011; // clk/64
-    TCCR1C = 0;
-    OCR1A = 249;
-    TIMSK1 = (1 << OCIE1A);
+    timer1();
 
     initInterrupts();
     sei();
@@ -75,25 +58,34 @@ int main()
     set_bit(DDRB, PB5); // led 8
     char str[50];
     uint16_t volt;
-
     uint8_t titi = 0;
-
+    uint8_t pausa = 0;
+    int8_t mins = 3, mins_save, segs_save;
+    enum sexo_fernandez
+    {
+        seteo,
+        star_stop,
+        titilar,
+        titilarge,
+        finazilo,
+        Voltimetro
+    };
+    enum sexo_fernandez estado = seteo;
     while (1)
     {
         switch (estado)
         {
         case seteo:
-            sprintf(&str[0], "%dm%ds  ", mins, segs);
-            strtupapa(&str[0], &scroll_time);
-            segs = angle;
+            sprintf(&str[0], "%dm%ds  ", mins, angle);
+            strtupapa(&str[0]);
             if (mins < 20)
             {
-                if (segs > 59)
+                if (angle > 59)
                 {
                     mins++;
                     angle = 0;
                 }
-                if (segs < 0)
+                if (angle < 0)
                 {
                     if (mins > 0)
                     {
@@ -106,12 +98,16 @@ int main()
                     }
                 }
             }
-
-            if (boton3 == 0) // deteccion de flanco bot3
+            else
+            {
+                mins = 0;
+                angle = 0;
+            }
+            if (boton3 == 0)
             {
                 estado = star_stop;
                 mins_save = mins;
-                segs_save = segs;
+                segs_save = angle;
             }
             if (flag_bot1 == 1 && e_a_b1 == 0) // deteccion de flanco bot1
             {
@@ -120,25 +116,25 @@ int main()
             e_a_b1 = flag_bot1;
             break;
         case star_stop:
-            sprintf(&str[0], "%dm%ds   ", mins, segs);
-            strtupapa(&str[0], &scroll_time);
+            sprintf(&str[0], "%dm%ds   ", mins, angle);
+            strtupapa(&str[0]);
             if (boton3 == 0) // deteccion de flanco bot3
                 pausa = !pausa;
             if (pausa == 0)
             {
-                if (seg_st >= 1000)
+                if (seg_st >= 300)
                 {
                     seg_st = 0;
-                    if (segs >= 1)
+                    if (angle >= 1)
                     {
-                        segs--;
+                        angle--;
                     }
                     else
                     {
                         if (mins >= 1)
                         {
                             mins--;
-                            segs = 59;
+                            angle = 59;
                         }
                         else
                             estado = titilar;
@@ -149,7 +145,7 @@ int main()
             break;
         case titilar:
             sprintf(&str[0], "   \3\2 ");
-            strtupapa(&str[0], &scroll_time);
+            strtupapa(&str[0]);
             if (titi <= 20)
             {
                 if (seg_st >= 500)
@@ -167,7 +163,7 @@ int main()
             break;
         case titilarge:
             sprintf(&str[0], "  \3  \2");
-            strtupapa(&str[0], &scroll_time);
+            strtupapa(&str[0]);
             if (titi <= 20)
             {
                 if (seg_st >= 500)
@@ -185,13 +181,13 @@ int main()
             break;
         case finazilo:
             mins = mins_save;
-            segs = segs_save;
+            angle = segs_save;
             estado = seteo;
 
             break;
         case Voltimetro:
             sprintf(&str[0], "%d.%dV  ", volt / 1000, volt % 1000);
-            strtupapa(&str[0], &scroll_time);
+            strtupapa(&str[0]);
             if (seg_st >= 100)
             {
                 volt = (uint32_t)adc_read(0) * 5000 / 1024;
@@ -206,7 +202,7 @@ int main()
 
         default:
             sprintf(&str[0], "%d.%dV  ", volt / 1000, volt % 1000);
-            strtupapa(&str[0], &scroll_time);
+            strtupapa(&str[0]);
             if (seg_st >= 100)
             {
                 volt = (uint32_t)adc_read(0) * 5000 / 1024;

@@ -163,7 +163,7 @@ uint8_t tupapaminovio[128][6] = {
                                           //
 
 };
-
+/* Esta funcion configura las interrupciones para el encoder*/
 void initInterrupts(void)
 {
   EIMSK |= (1 << INT0);  // habilita interrupcion externa INT0 en PD2
@@ -171,68 +171,38 @@ void initInterrupts(void)
   EICRA |= (1 << ISC01); // configura flanco ascendente en interrupcion externa INT0
   EICRA |= (1 << ISC11); // configura flanco ascendente en interrupcion externa INT1
 }
-// uint8_t enconderiano(uint8_t angle)
-//{
-//   static uint8_t anglepass = 0;
-//   if (angle == anglepass)
-//     return 2;
-//   else
-//   {
-//     if (angle > anglepass)
-//       anglepass = angle;
-//       return 1;
-//     else
-//       anglepass = angle;
-//       return 0;
-//   }
-// }
-
+/* Esta funcion configura el adc, tomando la tension de refenrencia del arduino*/
 void adc_init()
 {
-    // Configurar el prescaler a 128 (frecuencia ADC = 16 MHz / 128 = 125 kHz)
-    ADCSRA |= (1 << ADPS2) | (1 << ADPS1) | (1 << ADPS0);
+  // Configurar el prescaler a 128 (frecuencia ADC = 16 MHz / 128 = 125 kHz)
+  ADCSRA |= (1 << ADPS2) | (1 << ADPS1) | (1 << ADPS0);
 
-    // Seleccionar la referencia de voltaje como AVcc (5V con capacitor en AREF)
-    ADMUX |= (1 << REFS0);
+  // Seleccionar la referencia de voltaje como AVcc (5V con capacitor en AREF)
+  ADMUX |= (1 << REFS0);
 
-    // Habilitar el ADC
-    ADCSRA |= (1 << ADEN);
+  // Habilitar el ADC
+  ADCSRA |= (1 << ADEN);
 }
-uint16_t adc_read(uint8_t channel) {
-    // Asegurarse de que el canal esté en el rango válido (0-7)
-    channel &= 0b00000111;
-
-    // Seleccionar el canal configurando los bits MUX
-    ADMUX = (ADMUX & 0xF8) | channel;
-
-    // Iniciar la conversión
-    ADCSRA |= (1 << ADSC);
-
-    // Esperar a que la conversión termine (ADSC se pone en 0)
-    while (ADCSRA & (1 << ADSC));
-
-    // Retornar el valor convertido (10 bits)
-    return ADC;
-}
-void strtupapa(char *str, int *fl_scroll)
+/* Esta funcion me devuelve un valor digiral entre 0 y 1024bits del adc*/
+uint16_t adc_read(uint8_t channel)
 {
-  static uint8_t hola[LARGO_VECTOR_SALIDA] = {};
-  static uint8_t scroll_save = 0;
+  // Asegurarse de que el canal esté en el rango válido (0-7)
+  channel &= 0b00000111;
 
-  mostrar_str(&str[0], &hola[0]);
+  // Seleccionar el canal configurando los bits MUX
+  ADMUX = (ADMUX & 0xF8) | channel;
 
-  if (*fl_scroll >= 50)
-  {
-    *fl_scroll = 0;
-    scroll_save = hola[0];
-    for (size_t i = 0; i < (strlen(str) * 6); i++)
-    {
-      hola[i] = hola[i + 1];
-    }
-    hola[(strlen(str) * 6)] = scroll_save;
-  }
-  mux_leds(&hola[0]);
-};
+  // Iniciar la conversión
+  ADCSRA |= (1 << ADSC);
+
+  // Esperar a que la conversión termine (ADSC se pone en 0)
+  while (ADCSRA & (1 << ADSC))
+    ;
+
+  // Retornar el valor convertido (10 bits)
+  return ADC;
+}
+/* Esta funcion configura el timer1*/
 void timer1(void)
 {
   /*
@@ -244,7 +214,14 @@ void timer1(void)
   OCR1A = 249;
   TIMSK1 = (1 << OCIE1A);
 }
-
+/* Esta funcion me muestra el str que le pase en la matris led*/
+void strtupapa(char *str)
+{
+  static uint8_t hola[LARGO_VECTOR_SALIDA] = {};
+  mostrar_str(&str[0], &hola[0]);
+  mux_leds(&hola[0]);
+};
+/* Esta funcion me selecciona que fila prender de la matris*/
 void select_fila(uint8_t fila)
 {
   uint8_t aux = 0b00000001;
@@ -265,6 +242,7 @@ void select_fila(uint8_t fila)
     //_delay_ms(250);
   }
 }
+/* Esta funcion me manda que leds prender a las filas*/
 void send_fila(uint64_t data)
 {
   // Comienza desde el bit más significativo
@@ -283,7 +261,7 @@ void send_fila(uint64_t data)
     //_delay_ms(250);
   }
 }
-
+/* Esta funcion carga 1 caracter en el vector que le mandes*/
 void cargar_char(char character, uint8_t *buffer, uint8_t reset_ptr)
 {
 
@@ -303,7 +281,7 @@ void cargar_char(char character, uint8_t *buffer, uint8_t reset_ptr)
     buffer_index++;
   }
 }
-
+/* Esta funcion carga un str entero en el vector que le mandes*/
 void mostrar_str(char *texto, uint8_t *buffer)
 {
 
@@ -317,7 +295,7 @@ void mostrar_str(char *texto, uint8_t *buffer)
     i++;
   }
 };
-
+/* Esta funcion me carga el vector que le mande a la matris*/
 void mux_leds(uint8_t hola[])
 {
   static uint64_t beats;
@@ -338,58 +316,3 @@ void mux_leds(uint8_t hola[])
   clear_bit(PORTB, PB1);
   beats = beats_ini = 0;
 }
-
-/*
-------------------------------------------------------------------------------------------------------------------------------------
-------------------------------------------------------------------------------------------------------------------------------------
-------------------------------------------------------------------------------------------------------------------------------------
-------------------------------------------------------------------------------------------------------------------------------------
-------------------------------------------------------------------------------------------------------------------------------------
-------------------------------------------------------------------------------------------------------------------------------------
-------------------------------------------------------------------------------------------------------------------------------------
-------------------------------------------------------------------------------------------------------------------------------------
-*/
-
-/*
-
-357  troncos de roble
-72   escaleras de roble
-225  paredes de ladrillos de piedra
-22   paredes de adoquines
-50   puertas de valla de abeto
-86    vallas de abeto
-89    trampillas de abeto
-212  escaleras de abeto
-135  fogatas
-55   hojas de roble
-450  tablas de abeto
-141   tablones de roble
-5    arbustos muertos
-7    macetas
-16   obsidiana
-58   cofres
-30   troncos de roble decapados
-20   paneles de vidrio
-12    barriles
-3    mesas de elaboración
-16   botones de abeto
-68   escaleras de ladrillo de piedra
-21   losa de ladrillo de piedra
-5     hornos
-5    fumadores
-5      altos hornos
-1     telar
-1     mesa de herrería
-1     mesa de cartografía
-1     cortador de piedra
-1    bambú
-1    flor
-12    estanterías
-1     yunque
-1     mesa de reparación y desencanto
-1     cama
-1     soporte de armadura
-1     cofre final
-11   alfombras
-
-*/
