@@ -188,7 +188,7 @@ int main()
         case Voltimetro:
             sprintf(&str[0], "%d.%dV  ", volt / 1000, volt % 1000);
             strtupapa(&str[0]);
-            if (seg_st >= 100)
+            if (seg_st >= 10)
             {
                 volt = (uint32_t)adc_read(0) * 5000 / 1024;
                 seg_st = 0;
